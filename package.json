@@ -13,6 +13,8 @@
     "axios": "^1.12.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-is": "^19.2.0",
+    "recharts": "^3.2.1",
     "trivia": "^1.0.0"
   },
   "devDependencies": {

@@ -1,6 +1,5 @@
 import axios from "axios";
 import type { Category } from "../models/category";
-import type { Question } from "../models/question";
 
 const trivia = axios.create(
     {
@@ -15,5 +14,5 @@ export async function fetchCategories() {
 
 export async function fetchQuestions(amount: number) {
     const response = await trivia.get(`/api.php?amount=${amount}`);
-    return response.data["results"] as Question[];
+    return response.data["results"];
 }

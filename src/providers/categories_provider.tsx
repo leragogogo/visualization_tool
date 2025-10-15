@@ -34,6 +34,7 @@ function reducer(state: State, action: Action): State {
 type CategoriesContextState = {
   state: State;
   load: () => Promise<void>;
+  findCategoryIdByName: (name: string) => number | null;
   selectCategory: (categoryId: number) => void;
 }
 
@@ -50,16 +51,17 @@ export const CategoriesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     dispatch({ type: "SELECT_CATEGORY", payload: category ?? null });
   }
 
+  const findCategoryIdByName = (name: string): number | null => {
+    const category = state.categories?.find((c) => c.name == name);
+    return category?.id ?? null;
+  }
   const load = async () => {
     dispatch({ type: "LOAD_START" });
-    console.log("start categories")
     try {
       const categories = await fetchCategories();
-      dispatch({ type: "LOAD_SUCCESS", payload: categories })
-      console.log("fetch categories")
+      dispatch({ type: "LOAD_SUCCESS", payload: categories });
     } catch (err: any) {
       dispatch({ type: "LOAD_ERROR", payload: "Failed to load categories" });
-      console.log("error categories")
     }
   };
 
@@ -69,7 +71,7 @@ export const CategoriesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
 
   return (
-    <CategoriesContext.Provider value={{ state, selectCategory, load }}>
+    <CategoriesContext.Provider value={{ state, selectCategory, load, findCategoryIdByName }}>
       {children}
     </CategoriesContext.Provider>
   );
