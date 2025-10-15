@@ -55,6 +55,7 @@ export const CategoriesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const category = state.categories?.find((c) => c.name == name);
     return category?.id ?? null;
   }
+
   const load = async () => {
     dispatch({ type: "LOAD_START" });
     try {

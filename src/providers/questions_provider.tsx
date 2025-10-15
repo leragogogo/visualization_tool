@@ -11,7 +11,6 @@ type State = {
     questionsError: string | null;
     questions: Question[] | null;
     questionsByCategory: Question[] | null;
-    questionsByDifficulty: Question[] | null;
 }
 
 type Action =
@@ -19,14 +18,12 @@ type Action =
     | { type: "LOAD_SUCCESS", payload: Question[] }
     | { type: "LOAD_ERROR"; payload: string }
     | { type: "FILTER_BY_CATEGORY", payload: Question[] | null }
-    | { type: "FILTER_BY_DIFFICULTY", payload: Question[] | null }
 
 const initial: State = {
     questionsLoading: true,
     questionsError: null,
     questions: null,
     questionsByCategory: null,
-    questionsByDifficulty: null
 };
 
 function reducer(state: State, action: Action): State {
@@ -37,20 +34,15 @@ function reducer(state: State, action: Action): State {
             questionsError: null,
             questions: action.payload,
             questionsByCategory: null,
-            questionsByDifficulty: null
         };
         case "LOAD_ERROR": return {
             questionsLoading: false,
             questionsError: action.payload,
             questions: null,
             questionsByCategory: null,
-            questionsByDifficulty: null
         };
         case "FILTER_BY_CATEGORY": return {
             ...state, questionsByCategory: action.payload
-        };
-        case "FILTER_BY_DIFFICULTY": return {
-            ...state, questionsByDifficulty: action.payload
         };
         default: return state;
     }
@@ -59,12 +51,10 @@ function reducer(state: State, action: Action): State {
 type QuestionsContextState = {
     state: State;
     load: (amount: number) => Promise<void>;
-    filterByCategory: (category: Category) => void;
-    filterByDifficulty: (difficulty: string) => void;
-    getNumberOfQuestionsByCategory: (category: Category) => number;
-    getNumberOfQuestionsByDifficulty: (difficulty: string) => number;
+    filterByCategory: (category: number) => void;
     getDistributionByCategory: () => { name: string, questions: number }[];
     getDistributionByDifficulty: () => { name: string, questions: number }[];
+    getDistributionByDifficultyForCategory: () => { name: string, questions: number }[];
 }
 
 const QuestionsContext = createContext<QuestionsContextState | undefined>(undefined);
@@ -105,26 +95,40 @@ export const QuestionsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
 
     const getDistributionByDifficulty = (): DistributionData[] => {
+        console.log("getDistributionByDifficulty")
         let data: DistributionData[] = []
         for (const difficulty of difficulties) {
             data.push({
                 name: difficulty,
-                questions: getNumberOfQuestionsByDifficulty(difficulty),
+                questions: getNumberOfQuestionsByDifficulty(state?.questions ?? [], difficulty),
             });
         }
         return data;
     }
 
-    const filterByCategory = (category: Category) => {
-        let filteredQuestions =
-            state.questions?.filter((questions) => questions.category.id == category.id);
-        dispatch({ type: "FILTER_BY_CATEGORY", payload: filteredQuestions ?? null });
+    const getDistributionByDifficultyForCategory = (): DistributionData[] => {
+        console.log("getDistributionByDifficultyForCategory")
+        let data: DistributionData[] = []
+        for (const difficulty of difficulties) {
+            data.push({
+                name: difficulty,
+                questions: getNumberOfQuestionsByDifficulty(state?.questionsByCategory ?? [], difficulty),
+            });
+        }
+        return data;
     }
 
-    const filterByDifficulty = (difficulty: string) => {
-        let filteredQuestions: Question[] | undefined =
-            state.questions?.filter((questions) => questions.difficulty == difficulty);
-        dispatch({ type: "FILTER_BY_DIFFICULTY", payload: filteredQuestions ?? null });
+    const filterByCategory = (categoryId: number) => {
+        if (Number.isNaN(categoryId)) {
+            dispatch({ type: "FILTER_BY_CATEGORY", payload: null });
+            return;
+        }
+        const filteredQuestions = state.questions?.filter((q) => q.category.id == categoryId);
+        if (!filteredQuestions || filteredQuestions.length === 0) {
+            dispatch({ type: "FILTER_BY_CATEGORY", payload: [] });
+        } else {
+            dispatch({ type: "FILTER_BY_CATEGORY", payload: filteredQuestions });
+        }
     }
 
     const getNumberOfQuestionsByCategory = (category: Category): number => {
@@ -133,21 +137,20 @@ export const QuestionsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         return filteredQuestions?.length ?? 0;
     }
 
-    const getNumberOfQuestionsByDifficulty = (difficulty: string): number => {
+    const getNumberOfQuestionsByDifficulty = (questions: Question[], difficulty: string): number => {
         let filteredQuestions: Question[] | undefined =
-            state.questions?.filter((questions) => questions.difficulty == difficulty);
+            questions.filter((questions) => questions.difficulty == difficulty);
         return filteredQuestions?.length ?? 0;
     }
+
 
     return <QuestionsContext.Provider value={
         {
             state, load,
             filterByCategory,
-            filterByDifficulty,
-            getNumberOfQuestionsByCategory,
-            getNumberOfQuestionsByDifficulty,
             getDistributionByCategory,
-            getDistributionByDifficulty
+            getDistributionByDifficulty,
+            getDistributionByDifficultyForCategory
         }}>
         {children}
     </QuestionsContext.Provider>
