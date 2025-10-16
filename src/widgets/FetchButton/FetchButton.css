@@ -34,5 +34,6 @@
 @media(max-width: 600px) {
     .btn-grad {
         height: 50px;
+        margin-top: 30px;
     }
 }
