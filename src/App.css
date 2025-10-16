@@ -4,6 +4,7 @@
     margin-top: 40px;
     margin-left: 40px;
     min-height: 100vh;
+    gap: 20px;
 }
 
 @media (max-width: 600px) {

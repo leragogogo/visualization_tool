@@ -31,6 +31,7 @@ export const Chart: React.FC<Props> = (
             </div>
 
             {/* Chart that scales automatically with screen size */}
+            <div className="chart-inner">
             <ResponsiveContainer>
                 <BarChart data={data}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -66,6 +67,7 @@ export const Chart: React.FC<Props> = (
                     </Bar>
                 </BarChart>
             </ResponsiveContainer>
+            </div>
         </div>
     );
 }
