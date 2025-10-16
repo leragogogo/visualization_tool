@@ -8,6 +8,7 @@ type State = {
   selectedCategory: Category | null;
 };
 
+// Action types for the reducer
 type Action =
   | { type: "LOAD_START" }
   | { type: "LOAD_SUCCESS"; payload: Category[] }
@@ -16,6 +17,7 @@ type Action =
 
 const initial: State = { categories: null, categoriesError: null, selectedCategory: null };
 
+// Handles state transitions
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "LOAD_START":
@@ -46,6 +48,7 @@ const CategoriesContext = createContext<
 export const CategoriesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initial);
 
+  // Select category to filter the questions by it
   const selectCategory = (categoryId: number) => {
     const category = state.categories?.find((category) => category.id == categoryId);
     dispatch({ type: "SELECT_CATEGORY", payload: category ?? null });
@@ -56,6 +59,7 @@ export const CategoriesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return category?.id ?? null;
   }
 
+  // Load categories from API
   const load = async () => {
     dispatch({ type: "LOAD_START" });
     try {
@@ -66,6 +70,7 @@ export const CategoriesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   };
 
+  // Load categories on mount
   useEffect(() => {
     load();
   }, []);
@@ -79,6 +84,7 @@ export const CategoriesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
 };
 
+// Provides access to context with safety check
 export function useCategories(): CategoriesContextState {
   const ctx = useContext(CategoriesContext);
   if (!ctx) throw Error("useCategories must be used inside CategoriesProvider")
