@@ -10,5 +10,6 @@
     .app-root {
         flex-direction: column;
         align-items: center;
+        margin: 20px;
     }
 }
