@@ -2,6 +2,7 @@ import { useCategories } from './providers/categories_provider';
 import { useQuestions } from './providers/questions_provider'
 import { CategorySelector } from './widgets/categorySelector';
 import { QuestionsDistributionChart } from './widgets/questionsDistributionChart';
+import "./App.css";
 
 function App() {
   const {
@@ -12,35 +13,46 @@ function App() {
   } = useQuestions();
 
   const { selectCategory } = useCategories();
+
+  console.log(questionsState.questions, questionsState.questionsLoading, questionsState.questionsError);
   return (
-    <div style={{
-      display: "flex", flexDirection: "row",
-      marginTop: 40, marginLeft: 40, minHeight: "100vh"
-    }}>
-      <div style={{ flex: 2 }}>
+    <div className="app-root">
+      <div className="app-left">
         <CategorySelector />
-        <div style={{ width: "100%", height: 500, display: "flex", flexDirection: 'row' }}>
-          <QuestionsDistributionChart
-            data={getDistributionByCategory()}
-            label={"Distribution of questions by categories"}
-            color={"#8884d8"} />
-          {questionsState.questionsByCategory == null ?
+        {(questionsState.questions == null) &&
+          (questionsState.questionsError == null) &&
+          (!questionsState.questionsLoading) ?
+          <div className="empty-state">
+            <div className="empty-blob" />
+            <div className="empty-text">
+              {`No data to visualize. Click on the "Fetch" button to see distributions of questions by category and difficulty.`}
+            </div>
+          </div> :
+          <div className="charts-row">
             <QuestionsDistributionChart
-              data={getDistributionByDifficulty()}
-              label={"Distribution of questions by difficulties"}
-              color={"#82ca9d"} />
-            : <QuestionsDistributionChart
-              data={getDistributionByDifficultyForCategory()}
-              label={"Distribution of questions by difficulties"}
-              color={"#82ca9d"} />
-          }
-        </div>
+              isCategoryDistribution={true}
+              data={getDistributionByCategory()}
+              label={"Distribution of questions by categories"}
+              color={"#8884d8"} />
+            {questionsState.questionsByCategory == null ?
+              <QuestionsDistributionChart
+                isCategoryDistribution={false}
+                data={getDistributionByDifficulty()}
+                label={"Distribution of questions by difficulties"}
+                color={"#82ca9d"} />
+              : <QuestionsDistributionChart
+                isCategoryDistribution={false}
+                data={getDistributionByDifficultyForCategory()}
+                label={"Distribution of questions by difficulties"}
+                color={"#82ca9d"} />
+            }
+          </div>}
       </div>
-      <div style={{ flex: 1 }}>
-        <button onClick={async () => {
+      <div className="app-right">
+        <button className="btn-grad" onClick={async () => {
           selectCategory(NaN);
           await loadQuestions(50);
-        }}>
+        }} >
           Fetch
         </button>
       </div>

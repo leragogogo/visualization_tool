@@ -2,19 +2,21 @@ import { Bar, BarChart, CartesianGrid, Cell, Legend, ResponsiveContainer, Toolti
 import type { DistributionData } from '../models/distributionData';
 import { useCategories } from '../providers/categories_provider';
 import { useQuestions } from '../providers/questions_provider';
+import './questionsDistributionChart.css';
 
 interface Props {
+    isCategoryDistribution: boolean,
     data: DistributionData[],
     label: string,
     color: string,
 }
-export const QuestionsDistributionChart: React.FC<Props> = ({ data, label, color }) => {
+export const QuestionsDistributionChart: React.FC<Props> = ({ isCategoryDistribution, data, label, color }) => {
     const short = () => ("");
     const { state, findCategoryIdByName, selectCategory } = useCategories();
     const { filterByCategory } = useQuestions();
 
-    return <div style={{ marginRight: 20, flex: 1 }}>
-        <div style={{ textAlign: "center", marginTop: 8, fontSize: 16 }}>
+    return <div className="chart-container">
+        <div className="chart-title">
             {label}
         </div>
         <ResponsiveContainer>
@@ -28,11 +30,13 @@ export const QuestionsDistributionChart: React.FC<Props> = ({ data, label, color
                     dataKey="questions"
                     barSize={20}
                     fill={color}
-                    cursor="pointer"
+                    cursor={isCategoryDistribution ? "pointer" : undefined}
                     onClick={(data) => {
-                        const id = findCategoryIdByName(data.payload.name) ?? -1;
-                        selectCategory(id);
-                        filterByCategory(id);
+                        if (isCategoryDistribution) {
+                            const id = findCategoryIdByName(data.payload.name) ?? -1;
+                            selectCategory(id);
+                            filterByCategory(id);
+                        }
                     }}
                 >
                     {data.map((entry, index) => (

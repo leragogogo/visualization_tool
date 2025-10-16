@@ -1,12 +1,14 @@
 import { useCategories } from "../providers/categories_provider";
 import { useQuestions } from "../providers/questions_provider";
+import "./categorySelector.css";
 
 export const CategorySelector: React.FC = () => {
     const { state: categoriesState, selectCategory } = useCategories();
     const { filterByCategory } = useQuestions();
-    return <div style={{ marginBottom: 60 }}>
-        <label style={{ marginRight: 10 }}>Choose a category:</label>
+    return <div className="category-selector">
+        <label className="category-label">Choose a category:</label>
         <select
+            className="category-select"
             id="category"
             value={categoriesState.selectedCategory?.id ?? ""}
             onChange={(e) => {

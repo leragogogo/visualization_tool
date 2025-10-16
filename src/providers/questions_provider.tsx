@@ -14,13 +14,14 @@ type State = {
 }
 
 type Action =
+    | { type: "INIT" }
     | { type: "LOAD_START" }
     | { type: "LOAD_SUCCESS", payload: Question[] }
     | { type: "LOAD_ERROR"; payload: string }
     | { type: "FILTER_BY_CATEGORY", payload: Question[] | null }
 
 const initial: State = {
-    questionsLoading: true,
+    questionsLoading: false,
     questionsError: null,
     questions: null,
     questionsByCategory: null,
@@ -28,7 +29,10 @@ const initial: State = {
 
 function reducer(state: State, action: Action): State {
     switch (action.type) {
-        case "LOAD_START": return initial;
+        case "INIT": return initial;
+        case "LOAD_START": return {
+            ...initial, questionsLoading: true
+        };
         case "LOAD_SUCCESS": return {
             questionsLoading: false,
             questionsError: null,
@@ -95,7 +99,6 @@ export const QuestionsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
 
     const getDistributionByDifficulty = (): DistributionData[] => {
-        console.log("getDistributionByDifficulty")
         let data: DistributionData[] = []
         for (const difficulty of difficulties) {
             data.push({
@@ -107,7 +110,6 @@ export const QuestionsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
 
     const getDistributionByDifficultyForCategory = (): DistributionData[] => {
-        console.log("getDistributionByDifficultyForCategory")
         let data: DistributionData[] = []
         for (const difficulty of difficulties) {
             data.push({
