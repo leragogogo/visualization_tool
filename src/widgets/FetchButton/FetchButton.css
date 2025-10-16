@@ -1,0 +1,38 @@
+.btn-grad {
+    background: linear-gradient(135deg,
+            var(--color-primary),
+            var(--color-secondary));
+    background-size: 150% auto;
+    border: none;
+    transition: 0.5s;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 200px;
+    height: 70px;
+}
+
+.btn-grad:hover:not(:disabled) {
+    background-position: right center;
+}
+
+/*  gray gradient and different cursor when disabled  */
+.btn-grad:disabled {
+    background: linear-gradient(135deg,
+            var(--color-primary-disabled),
+            var(--color-secondary-disabled));
+    cursor: not-allowed;
+    color: #f5f5f5;
+}
+
+.btn-container {
+    flex: 1;
+}
+
+@media(max-width: 600px) {
+    .btn-grad {
+        height: 50px;
+    }
+}

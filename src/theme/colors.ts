@@ -1,0 +1,3 @@
+export const CATEGORY_DISTRIBITUON_COLOR = "#8884d8";
+export const DIFFICULTY_DISTRIBUTION_COLOR = "#82ca9d";
+export const SELECTED_BAR_COLOR = "#5e4b8b";

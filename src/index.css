@@ -4,4 +4,10 @@
   font-weight: 400;
   font-size: 20px;
   background-color: #f4f6fa;
+  --color-primary: #8884d8;
+  --color-secondary: #82ca9d;
+  --color-primary-disabled: #b3b3b3;
+  --color-secondary-disabled: #d9d9d9;
+  --color-error: red;
+
 }

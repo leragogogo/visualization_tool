@@ -13,6 +13,7 @@ type State = {
     questionsByCategory: Question[] | null;
 }
 
+// Action types for the reducer
 type Action =
     | { type: "INIT" }
     | { type: "LOAD_START" }
@@ -27,6 +28,7 @@ const initial: State = {
     questionsByCategory: null,
 };
 
+// Handles state transitions
 function reducer(state: State, action: Action): State {
     switch (action.type) {
         case "INIT": return initial;
@@ -65,13 +67,18 @@ const QuestionsContext = createContext<QuestionsContextState | undefined>(undefi
 
 export const QuestionsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initial);
+
+    // Category-related context
     const { state: categoriesState, findCategoryIdByName } = useCategories();
 
+    // Load questions from API
     const load = async (amount: number) => {
         dispatch({ type: "LOAD_START" });
         try {
             const questions = await fetchQuestions(amount);
             const formattedQuestions: Question[] = [];
+
+            // Convert API response into Question objects
             for (const q of questions) {
                 formattedQuestions.push({
                     difficulty: q.difficulty,
@@ -83,10 +90,11 @@ export const QuestionsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             };
             dispatch({ type: "LOAD_SUCCESS", payload: formattedQuestions })
         } catch {
-            dispatch({ type: "LOAD_ERROR", payload: "Failed to load questions" });
+            dispatch({ type: "LOAD_ERROR", payload: "Failed to load questions." });
         }
     }
 
+    // Compute distribution by category
     const getDistributionByCategory = (): DistributionData[] => {
         let data: DistributionData[] = []
         for (const category of categoriesState.categories ?? []) {
@@ -98,6 +106,7 @@ export const QuestionsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         return data;
     }
 
+    // Compute distribution by difficulty (without selected category)
     const getDistributionByDifficulty = (): DistributionData[] => {
         let data: DistributionData[] = []
         for (const difficulty of difficulties) {
@@ -109,6 +118,7 @@ export const QuestionsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         return data;
     }
 
+    // Compute distribution by difficulty (with selected category)
     const getDistributionByDifficultyForCategory = (): DistributionData[] => {
         let data: DistributionData[] = []
         for (const difficulty of difficulties) {
@@ -158,6 +168,7 @@ export const QuestionsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     </QuestionsContext.Provider>
 }
 
+// Provides access to context with safety check
 export function useQuestions(): QuestionsContextState {
     const ctx = useContext(QuestionsContext);
     if (!ctx) throw Error("useQuestions must be used inside QuestionsProvider");
